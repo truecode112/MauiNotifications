@@ -1,7 +1,116 @@
 ﻿@page "/"
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@inject ISnackbar Snackbar
+@using Amazon.SimpleNotificationService;
+@using Amazon.SimpleNotificationService.Model;
+@using System.Threading.Tasks;
 
-<h1>Hello, world!</h1>
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h4">Subscription to topic</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
 
-Welcome to your new app.
+                <MudCardContent>
+                    <MudTextField Label="Email" Class="mt-3"
+                    @bind-Value="model.Email" For="@(() => model.Email)" />
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+                    <MudTextField Label="Mobile Number"
+                    @bind-Value="model.MobileNumber" For="@(() => model.MobileNumber)" />
+
+                    <MudTextField Label="Topic name"
+                    @bind-Value="model.TopicName" For="@(() => model.TopicName)" />
+                    
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Subscribe</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    SubscribeForm model = new SubscribeForm();
+    bool success;
+
+    public class SubscribeForm
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required(ErrorMessage = "You must provide a mobile number")]
+        [Display(Name = "Mobile Phone")]
+        [DataType(DataType.PhoneNumber)]
+        public string MobileNumber { get; set; }
+
+        [Required]
+        public string TopicName { get; set; }
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+
+        /*var client = new AmazonSimpleNotificationServiceClient();
+        var request = new ListTopicsRequest();
+        var response = new ListTopicsResponse();
+        do
+        {
+            response = client.ListTopics(request);
+
+            foreach (var topic in response.Topics)
+            {
+                Console.WriteLine("Topic: {0}", topic.TopicArn);
+
+                var subs = client.ListSubscriptionsByTopic(
+                  new ListSubscriptionsByTopicRequest
+                      {
+                          TopicArn = topic.TopicArn
+                      });
+
+                var ss = subs.Subscriptions;
+
+                if (ss.Any())
+                {
+                    Console.WriteLine("  Subscriptions:");
+
+                    foreach (var sub in ss)
+                    {
+                        Console.WriteLine("    {0}", sub.SubscriptionArn);
+                    }
+                }
+
+                var attrs = client.GetTopicAttributes(
+                  new GetTopicAttributesRequest
+                      {
+                          TopicArn = topic.TopicArn
+                      }).Attributes;
+
+                if (attrs.Any())
+                {
+                    Console.WriteLine("  Attributes:");
+
+                    foreach (var attr in attrs)
+                    {
+                        Console.WriteLine("    {0} = {1}", attr.Key, attr.Value);
+                    }
+                }
+
+                Console.WriteLine();
+            }
+
+            request.NextToken = response.NextToken;
+
+        } while (!string.IsNullOrEmpty(response.NextToken));*/
+
+        Snackbar.Add("Subscribe successfully!!!", Severity.Success);
+
+    }
+}
