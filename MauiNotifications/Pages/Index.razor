@@ -1,79 +1,118 @@
 ﻿@page "/"
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
-@inject ISnackbar Snackbar
 @using Amazon.SimpleNotificationService;
 @using Amazon.SimpleNotificationService.Model;
 @using System.Threading.Tasks;
 @using Amazon;
 @using Microsoft.Extensions.Configuration;
-@inject IDialogService DialogService
+@inject NotificationService NotificationService
+@using Radzen
+@using System.Text.Json
+@using MauiNotifications.Services.Topics
 
-<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
-    <MudGrid>
-        <MudItem xs="12" sm="7">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h4">Subscription to topic</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
+@inject SnsTopicService TopicService
 
-                <MudCardContent>
-                    <MudTextField Label="Email" Class="mt-3"
-                    @bind-Value="model.Email" For="@(() => model.Email)" />
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
 
-                    <MudTextField Label="Mobile Number"
-                    @bind-Value="model.MobileNumber" For="@(() => model.MobileNumber)" />
-
-                    <MudSelect T="string" Label="Topic name" AnchorOrigin="Origin.BottomCenter">
-                        <MudSelectItem Value="@("Cappuccino")" />
-                        <MudSelectItem Value="@("Cafe Latte")" />
-                        <MudSelectItem Value="@("Espresso")" />
-                    </MudSelect>
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Subscribe</MudButton>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
+<div class="container my-4">
+    <RadzenTemplateForm TItem="SubscribeForm" Data="@model" Submit="@((SubscribeForm args) => { Submit(args); })">
+        <RadzenFieldset Text="Subscribe to topic">
         
-    </MudGrid>
-</EditForm>
+            <div class="row mb-4">
+                <div class="col-md-2  align-items-center d-flex">
+                    <RadzenLabel Text="Email" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextBox style="display: block;" class="w-100" @bind-Value="@model.Email" Name="Email" Placeholder="Email" />
+                    <RadzenRequiredValidator Component="Email" Text="Email is required" Popup=@popup Style="position: absolute" />
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-2 align-items-center d-flex">
+                    <RadzenLabel Text="Mobile number" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextBox style="display: block;" class="w-100" @bind-Value="@model.MobileNumber"  Name="MobileNumber" Placeholder="Mobile number" />
+                    <RadzenRequiredValidator Component="MobileNumber" Text="Mobile number is required" Popup=@popup Style="position: absolute" />
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-2 align-items-center d-flex">
+                    <RadzenLabel Text="Topic" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenDropDown @bind-Value="@model.TopicName" AllowClear="true" Placeholder="Select topic" Data="@topicNames" style="width: 100%;display: block;" TextProperty="" ValueProperty="" Name="TopicName">
+                    </RadzenDropDown>
+                    <RadzenRequiredValidator Component="TopicName" Text="Topic is required" Popup=@popup Style="position: absolute" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                        <RadzenButton Class="w-50" ButtonType="ButtonType.Submit" Icon="" Text="Subscribe" />
+                    </div>
+                </div>
+            </div>
+        </RadzenFieldset>
+    </RadzenTemplateForm>
+</div>
 
 @code {
 
     SubscribeForm model = new SubscribeForm();
     bool success;
-    string[] topicNames = new string[] { "Test1", "Test2", "Test3" };
-    /*
+    bool popup = false;
+    string[] topicNames;
+
     protected override async Task OnInitializedAsync()
     {
-        topicNames = new string[] { };
+        var topicService = MauiProgram.Services.GetService<SnsTopicService>();
+        var topicArns = await topicService.GetAllTopicsNameAsync();
+        topicNames = new string[topicArns.Count];
+        int index = 0;
+        foreach(TopicArn arn in topicArns) {
+            topicNames[index] = arn.TopicName;
+            index++;
+        }
     }
-    */
+
     public class SubscribeForm
     {
-        [Required]
-        [EmailAddress]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "You must provide a mobile number")]
-        [Display(Name = "Mobile Phone")]
-        [DataType(DataType.PhoneNumber)]
         public string MobileNumber { get; set; }
 
-        [Required]
         public string TopicName { get; set; }
+    }
+
+    void ShowNotification(NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+
+    void Submit(SubscribeForm arg)
+    {
+        //
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success Summary", Detail = "Success Detail", Duration = 4000 });
     }
 
     private void OnValidSubmit(EditContext context)
     {
-        IConfiguration config = MauiProgram.Services.GetService<IConfiguration>();
+        /*IConfiguration config = MauiProgram.Services.GetService<IConfiguration>();
         var settings = config.GetRequiredSection("Settings").Get<Settings.AWSSettings>();
         var client = new AmazonSimpleNotificationServiceClient(settings.aws_access_key, settings.aws_secret_key, RegionEndpoint.USEast1);
+        */
 
+
+        
         /*var client = new AmazonSimpleNotificationServiceClient();
         var request = new ListTopicsRequest();
         var response = new ListTopicsResponse();
@@ -127,7 +166,5 @@
         } while (!string.IsNullOrEmpty(response.NextToken));*/
 
         
-        Snackbar.Add("Subscribe successfully!!!", Severity.Success);
-
     }
 }

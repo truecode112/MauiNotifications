@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Sns.ConsoleApp.Services.Topics
+namespace MauiNotifications.Services.Topics
 {
     public interface ITopicService
     {

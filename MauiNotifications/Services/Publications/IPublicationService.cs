@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Sns.ConsoleApp.Services.Publications
+namespace MauiNotifications.Services.Publications
 {
     public interface IPublicationService<T>
     {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 
-namespace Sns.ConsoleApp.Services.Topics
+namespace MauiNotifications.Services.Topics
 {
     public sealed class SnsTopicService : ITopicService
     {
@@ -96,6 +96,31 @@ namespace Sns.ConsoleApp.Services.Topics
                         Name = topicArn.TopicName,
                         Region = topicArn.Region
                     });
+                }
+
+                request.NextToken = response.NextToken;
+
+            } while (response.NextToken != null);
+
+            return topics;
+        }
+
+        public async Task<IReadOnlyList<TopicArn>> GetAllTopicsNameAsync()
+        {
+            var topics = new List<TopicArn>();
+            var request = new ListTopicsRequest();
+            ListTopicsResponse response;
+            do
+            {
+                response = await _sns.ListTopicsAsync(request);
+
+                if (response.HttpStatusCode != HttpStatusCode.OK)
+                    throw new InvalidOperationException($"Unable to list all topics.");
+
+                foreach (var topic in response.Topics)
+                {
+                    var topicArn = new TopicArn(topic.TopicArn);
+                    topics.Add(topicArn);
                 }
 
                 request.NextToken = response.NextToken;

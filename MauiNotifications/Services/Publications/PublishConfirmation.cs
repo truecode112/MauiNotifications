@@ -1,4 +1,4 @@
-namespace Sns.ConsoleApp.Services.Publications
+namespace MauiNotifications.Services.Publications
 {
     public sealed class PublishConfirmation
     {

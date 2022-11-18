@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components.WebView.Maui;
 using MauiNotifications.Data;
-using MudBlazor.Services;
-using MudBlazor;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
+using Radzen;
+using Amazon.SimpleNotificationService;
+using MauiNotifications.Services.Subscriptions;
+using MauiNotifications.Services.Topics;
 
 namespace MauiNotifications;
 
@@ -19,7 +21,7 @@ public static class MauiProgram
 		var config = new ConfigurationBuilder()
 			.AddJsonStream(stream)
 			.Build();
-
+		
 		builder.Configuration.AddConfiguration(config);
 		builder
 			.UseMauiApp<App>()
@@ -29,25 +31,22 @@ public static class MauiProgram
 			});
 
 		builder.Services.AddMauiBlazorWebView();
-		builder.Services.AddMudServices(config =>
-		{
-            config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomCenter;
-
-            config.SnackbarConfiguration.PreventDuplicates = true;
-            config.SnackbarConfiguration.NewestOnTop = true;
-            config.SnackbarConfiguration.ShowCloseIcon = true;
-            config.SnackbarConfiguration.VisibleStateDuration = 2000;
-            config.SnackbarConfiguration.HideTransitionDuration = 300;
-            config.SnackbarConfiguration.ShowTransitionDuration = 300;
-            config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
-        });
+        builder.Services.AddScoped<DialogService>();
+        builder.Services.AddScoped<NotificationService>();
+        builder.Services.AddScoped<TooltipService>();
+        builder.Services.AddScoped<ContextMenuService>();
+		
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
 		
 		builder.Services.AddSingleton<WeatherForecastService>();
 
-		var app = builder.Build();
+        builder.Services.AddAWSService<IAmazonSimpleNotificationService>();
+        builder.Services.AddSingleton<ITopicService, SnsTopicService>();
+        builder.Services.AddSingleton<ISubscriptionService, SubscriptionService>();
+
+        var app = builder.Build();
         Services = app.Services;
         return app;
 	}

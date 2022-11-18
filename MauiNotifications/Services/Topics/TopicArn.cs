@@ -1,4 +1,4 @@
-namespace Sns.ConsoleApp.Services.Topics
+namespace MauiNotifications.Services.Topics
 {
     public sealed class TopicArn
     {

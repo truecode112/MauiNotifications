@@ -5,7 +5,7 @@ using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Sns.ConsoleApp.Services.Publications
+namespace MauiNotifications.Services.Publications
 {
     public sealed class PublicationService<T> : IPublicationService<T>
     {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Sns.ConsoleApp.Services.Topics
+namespace MauiNotifications.Services.Topics
 {
     public sealed class TopicDetail
     {

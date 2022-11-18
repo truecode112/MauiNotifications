@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amazon.SimpleNotificationService.Model;
 
-namespace Sns.ConsoleApp.Services.Subscriptions
+namespace MauiNotifications.Services.Subscriptions
 {
     public interface ISubscriptionService
     {

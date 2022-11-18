@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 
-namespace Sns.ConsoleApp.Services.Subscriptions
+namespace MauiNotifications.Services.Subscriptions
 {
     public sealed class SubscriptionService : ISubscriptionService
     {

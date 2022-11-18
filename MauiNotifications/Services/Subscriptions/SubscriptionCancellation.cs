@@ -1,4 +1,4 @@
-namespace Sns.ConsoleApp.Services.Subscriptions
+namespace MauiNotifications.Services.Subscriptions
 {
     public sealed class SubscriptionCancellation
     {
