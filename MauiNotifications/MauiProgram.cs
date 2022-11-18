@@ -2,14 +2,25 @@
 using MauiNotifications.Data;
 using MudBlazor.Services;
 using MudBlazor;
+using System.Reflection;
+using Microsoft.Extensions.Configuration;
 
 namespace MauiNotifications;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
+    public static IServiceProvider Services { get; private set; }
+
+    public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
+        using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("MauiNotifications.Settings.appsettings.json");
+
+		var config = new ConfigurationBuilder()
+			.AddJsonStream(stream)
+			.Build();
+
+		builder.Configuration.AddConfiguration(config);
 		builder
 			.UseMauiApp<App>()
 			.ConfigureFonts(fonts =>
@@ -36,6 +47,8 @@ public static class MauiProgram
 		
 		builder.Services.AddSingleton<WeatherForecastService>();
 
-		return builder.Build();
+		var app = builder.Build();
+        Services = app.Services;
+        return app;
 	}
 }

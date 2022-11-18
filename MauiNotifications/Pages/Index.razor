@@ -5,6 +5,9 @@
 @using Amazon.SimpleNotificationService;
 @using Amazon.SimpleNotificationService.Model;
 @using System.Threading.Tasks;
+@using Amazon;
+@using Microsoft.Extensions.Configuration;
+@inject IDialogService DialogService
 
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
@@ -24,22 +27,32 @@
                     <MudTextField Label="Mobile Number"
                     @bind-Value="model.MobileNumber" For="@(() => model.MobileNumber)" />
 
-                    <MudTextField Label="Topic name"
-                    @bind-Value="model.TopicName" For="@(() => model.TopicName)" />
-                    
+                    <MudSelect T="string" Label="Topic name" AnchorOrigin="Origin.BottomCenter">
+                        <MudSelectItem Value="@("Cappuccino")" />
+                        <MudSelectItem Value="@("Cafe Latte")" />
+                        <MudSelectItem Value="@("Espresso")" />
+                    </MudSelect>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Subscribe</MudButton>
                 </MudCardActions>
             </MudCard>
         </MudItem>
+        
     </MudGrid>
 </EditForm>
 
 @code {
+
     SubscribeForm model = new SubscribeForm();
     bool success;
-
+    string[] topicNames = new string[] { "Test1", "Test2", "Test3" };
+    /*
+    protected override async Task OnInitializedAsync()
+    {
+        topicNames = new string[] { };
+    }
+    */
     public class SubscribeForm
     {
         [Required]
@@ -57,6 +70,9 @@
 
     private void OnValidSubmit(EditContext context)
     {
+        IConfiguration config = MauiProgram.Services.GetService<IConfiguration>();
+        var settings = config.GetRequiredSection("Settings").Get<Settings.AWSSettings>();
+        var client = new AmazonSimpleNotificationServiceClient(settings.aws_access_key, settings.aws_secret_key, RegionEndpoint.USEast1);
 
         /*var client = new AmazonSimpleNotificationServiceClient();
         var request = new ListTopicsRequest();
@@ -110,6 +126,7 @@
 
         } while (!string.IsNullOrEmpty(response.NextToken));*/
 
+        
         Snackbar.Add("Subscribe successfully!!!", Severity.Success);
 
     }
