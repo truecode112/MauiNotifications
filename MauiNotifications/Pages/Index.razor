@@ -9,6 +9,7 @@
 @inject NotificationService NotificationService
 @using Radzen
 @using System.Text.Json
+@using Microsoft.JSInterop;
 @using MauiNotifications.Services.Topics
 
 @inject SnsTopicService TopicService
@@ -70,18 +71,24 @@
     SubscribeForm model = new SubscribeForm();
     bool success;
     bool popup = false;
-    string[] topicNames;
+    string[] topicNames = new string[] { "Test1", "Test2", "Test3" };
+    SnsTopicService _topicService = null;
 
     protected override async Task OnInitializedAsync()
     {
-        var topicService = MauiProgram.Services.GetService<SnsTopicService>();
-        var topicArns = await topicService.GetAllTopicsNameAsync();
+        var AwsSNS = MauiProgram.Services.GetService<IAmazonSimpleNotificationService>();
+        _topicService = new SnsTopicService(AwsSNS);
+        var topicArns = await _topicService.GetAllTopicsNameAsync();
         topicNames = new string[topicArns.Count];
         int index = 0;
-        foreach(TopicArn arn in topicArns) {
+        foreach (TopicArn arn in topicArns)
+        {
             topicNames[index] = arn.TopicName;
             index++;
         }
+
+        /*var topicService = MauiProgram.Services.GetService<SnsTopicService>();
+        */
     }
 
     public class SubscribeForm

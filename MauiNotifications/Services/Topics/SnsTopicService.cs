@@ -8,9 +8,14 @@ using Amazon.SimpleNotificationService.Model;
 
 namespace MauiNotifications.Services.Topics
 {
-    public sealed class SnsTopicService : ITopicService
+    public class SnsTopicService
     {
         private readonly IAmazonSimpleNotificationService _sns;
+
+        public SnsTopicService()
+        {
+            _sns = null;
+        }
 
         public SnsTopicService(IAmazonSimpleNotificationService sns)
         {
