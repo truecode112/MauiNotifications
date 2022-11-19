@@ -42,11 +42,13 @@ public static class MauiProgram
 		
 		builder.Services.AddSingleton<WeatherForecastService>();
 
+
+
         builder.Services.AddAWSService<IAmazonSimpleNotificationService>();
         //builder.Services.AddSingleton<ITopicService, SnsTopicService>();
         builder.Services.AddSingleton<SnsTopicService>();
 
-        builder.Services.AddSingleton<ISubscriptionService, SubscriptionService>();
+        builder.Services.AddSingleton<SubscriptionService>();
 
         var app = builder.Build();
         Services = app.Services;

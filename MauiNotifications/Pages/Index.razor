@@ -11,8 +11,7 @@
 @using System.Text.Json
 @using Microsoft.JSInterop;
 @using MauiNotifications.Services.Topics
-
-@inject SnsTopicService TopicService
+@using MauiNotifications.Services.Subscriptions
 
 <style>
     form .row {
@@ -25,7 +24,7 @@
         <RadzenFieldset Text="Subscribe to topic">
         
             <div class="row mb-4">
-                <div class="col-md-2  align-items-center d-flex">
+                <div class="col-md-4  align-items-center d-flex">
                     <RadzenLabel Text="Email" />
                 </div>
                 <div class="col-md-8">
@@ -35,7 +34,7 @@
             </div>
 
             <div class="row mb-4">
-                <div class="col-md-2 align-items-center d-flex">
+                <div class="col-md-4 align-items-center d-flex">
                     <RadzenLabel Text="Mobile number" />
                 </div>
                 <div class="col-md-8">
@@ -45,8 +44,8 @@
             </div>
 
             <div class="row mb-4">
-                <div class="col-md-2 align-items-center d-flex">
-                    <RadzenLabel Text="Topic" />
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Topic name" />
                 </div>
                 <div class="col-md-8">
                     <RadzenDropDown @bind-Value="@model.TopicName" AllowClear="true" Placeholder="Select topic" Data="@topicNames" style="width: 100%;display: block;" TextProperty="" ValueProperty="" Name="TopicName">
@@ -71,13 +70,14 @@
     SubscribeForm model = new SubscribeForm();
     bool success;
     bool popup = false;
-    string[] topicNames = new string[] { "Test1", "Test2", "Test3" };
+    string[] topicNames = null;
     SnsTopicService _topicService = null;
+    SubscriptionService _subscrService = null;
 
     protected override async Task OnInitializedAsync()
     {
-        var AwsSNS = MauiProgram.Services.GetService<IAmazonSimpleNotificationService>();
-        _topicService = new SnsTopicService(AwsSNS);
+        _topicService = new SnsTopicService();
+        _subscrService = new SubscriptionService();
         var topicArns = await _topicService.GetAllTopicsNameAsync();
         topicNames = new string[topicArns.Count];
         int index = 0;
@@ -88,7 +88,7 @@
         }
 
         /*var topicService = MauiProgram.Services.GetService<SnsTopicService>();
-        */
+    */
     }
 
     public class SubscribeForm
@@ -105,21 +105,29 @@
         NotificationService.Notify(message);
     }
 
-    void Submit(SubscribeForm arg)
+    async Task Submit(SubscribeForm arg)
     {
         //
-        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success Summary", Detail = "Success Detail", Duration = 4000 });
+        //ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success Summary", Detail = "Success Detail", Duration = 4000 });
+        try
+        {
+            var email = model.Email;
+            var mobile = model.MobileNumber;        //13153704390
+            var emailSubscription = await _subscrService.CreateEmailSubscriptionAsync(model.TopicName, email);
+            var mobileSubscription = await _subscrService.CreateSMSSubscriptionAsync(model.TopicName, mobile);
+            var successDetail = string.Format("{0} and {1} subscribed to {2} successfully!", email, mobile, model.TopicName);
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Subscribe success", Detail = successDetail, Duration = 3000 });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Subscribe failed", Detail = e.Message, Duration = 3000 });
+        }
     }
 
     private void OnValidSubmit(EditContext context)
     {
-        /*IConfiguration config = MauiProgram.Services.GetService<IConfiguration>();
-        var settings = config.GetRequiredSection("Settings").Get<Settings.AWSSettings>();
-        var client = new AmazonSimpleNotificationServiceClient(settings.aws_access_key, settings.aws_secret_key, RegionEndpoint.USEast1);
-        */
-
-
-        
+       
         /*var client = new AmazonSimpleNotificationServiceClient();
         var request = new ListTopicsRequest();
         var response = new ListTopicsResponse();

@@ -7,13 +7,17 @@ using Amazon.SimpleNotificationService.Model;
 
 namespace MauiNotifications.Services.Subscriptions
 {
-    public sealed class SubscriptionService : ISubscriptionService
+    public sealed class SubscriptionService : MauiAWSNotificationService
     {
-        private readonly IAmazonSimpleNotificationService _sns;
+        public SubscriptionService()
+            :base()
+        {
+            
+        }
 
         public SubscriptionService(IAmazonSimpleNotificationService sns)
         {
-            _sns = sns ?? throw new ArgumentNullException(nameof(sns));
+            awsSNS = sns ?? throw new ArgumentNullException(nameof(sns));
         }
 
         public Task<SubscriptionCancellation> CancelSubscriptionAsync(string subscriptionArn)
@@ -27,7 +31,7 @@ namespace MauiNotifications.Services.Subscriptions
             {
                 try
                 {
-                    var subscriptionAttributesResponse = await _sns.GetSubscriptionAttributesAsync(subscriptionArn);
+                    var subscriptionAttributesResponse = await awsSNS.GetSubscriptionAttributesAsync(subscriptionArn);
                 }
                 catch (NotFoundException)
                 {
@@ -39,7 +43,7 @@ namespace MauiNotifications.Services.Subscriptions
                     SubscriptionArn = subscriptionArn
                 };
 
-                var unsubscribeResponse = await _sns.UnsubscribeAsync(unsubscribeRequest);
+                var unsubscribeResponse = await awsSNS.UnsubscribeAsync(unsubscribeRequest);
 
                 if (unsubscribeResponse.HttpStatusCode != HttpStatusCode.OK)
                     throw new InvalidOperationException($"Subscription cancellation failed for subject ARN '{subscriptionArn}'.");
@@ -63,7 +67,7 @@ namespace MauiNotifications.Services.Subscriptions
 
             async Task<Subscription> subscribeAsync()
             {
-                var topic = await _sns.FindTopicAsync(topicName);
+                var topic = await awsSNS.FindTopicAsync(topicName);
 
                 if (topic == null)
                     throw new ArgumentException($"The topic '{topicName}' does not exist.");
@@ -75,7 +79,41 @@ namespace MauiNotifications.Services.Subscriptions
                     TopicArn = topic.TopicArn
                 };
 
-                var subscribeResponse = await _sns.SubscribeAsync(subscribeRequest);
+                var subscribeResponse = await awsSNS.SubscribeAsync(subscribeRequest);
+
+                return new Subscription
+                {
+                    SubscriptionArn = subscribeResponse.SubscriptionArn,
+                    TopicArn = topic.TopicArn
+                };
+            }
+        }
+
+        public Task<Subscription> CreateSMSSubscriptionAsync(string topicName, string mobileNumber)
+        {
+            if (string.IsNullOrWhiteSpace(topicName))
+                throw new ArgumentException($"A non-null/empty '{topicName}' is required.", nameof(topicName));
+
+            if (string.IsNullOrWhiteSpace(mobileNumber))
+                throw new ArgumentException($"A non-null/empty '{mobileNumber}' is required.", nameof(mobileNumber));
+
+            return subscribeAsync();
+
+            async Task<Subscription> subscribeAsync()
+            {
+                var topic = await awsSNS.FindTopicAsync(topicName);
+
+                if (topic == null)
+                    throw new ArgumentException($"The topic '{topicName}' does not exist.");
+
+                var subscribeRequest = new SubscribeRequest
+                {
+                    Endpoint = mobileNumber,
+                    Protocol = "sms",
+                    TopicArn = topic.TopicArn
+                };
+
+                var subscribeResponse = await awsSNS.SubscribeAsync(subscribeRequest);
 
                 return new Subscription
                 {
@@ -94,7 +132,7 @@ namespace MauiNotifications.Services.Subscriptions
 
             async Task<IReadOnlyList<Subscription>> listSubscriptionsAsync()
             {
-                var topic = await _sns.FindTopicAsync(topicName);
+                var topic = await awsSNS.FindTopicAsync(topicName);
 
                 if (topic == null)
                     throw new ArgumentException($"The topic '{topicName}' does not exist.");
@@ -109,7 +147,7 @@ namespace MauiNotifications.Services.Subscriptions
                 ListSubscriptionsByTopicResponse response;
                 do
                 {
-                    response = await _sns.ListSubscriptionsByTopicAsync(request);
+                    response = await awsSNS.ListSubscriptionsByTopicAsync(request);
 
                     if (response.HttpStatusCode != HttpStatusCode.OK)
                         throw new InvalidOperationException($"Unable to list subscriptions for topic '{topicName}'");
