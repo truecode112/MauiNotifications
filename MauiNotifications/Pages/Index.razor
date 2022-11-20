@@ -76,7 +76,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _topicService = new SnsTopicService();
+        /*_topicService = new SnsTopicService();
         _subscrService = new SubscriptionService();
         var topicArns = await _topicService.GetAllTopicsNameAsync();
         topicNames = new string[topicArns.Count];
@@ -85,10 +85,7 @@
         {
             topicNames[index] = arn.TopicName;
             index++;
-        }
-
-        /*var topicService = MauiProgram.Services.GetService<SnsTopicService>();
-    */
+        }*/
     }
 
     public class SubscribeForm

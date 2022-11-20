@@ -1,0 +1,126 @@
+"notificationRecords": [
+  {
+    "userId": "123",
+    "role": "admin",
+    "notifications": [
+      {
+        "module": "module1",
+        "currentState": "notSet",
+        "actionState": "before",
+        "greetingHeading": "Hello from Blazor",
+        "primaryNotificationMessage": "",
+        "notificationDateTimestamp": "22/1/2022:23:10:30",
+        "history": [
+          {
+            "actionState": "before",
+            "state": "yes",
+            "actionedDateTime": "22/1/2022:23:10:30"
+          },
+          {
+            "actionState": "after",
+            "state": "no",
+            "actionedDateTime": "21/1/2022:21:10:30"
+          }
+        ]
+      }
+    ],
+    "personal": {
+      "categories": [
+        {
+          "name": "sports"
+        },
+        {
+          "name": "movies"
+        }
+      ],
+      "Id": null,
+      "guid": "4c9205c6-02a3-49a3-b1f7-ee8ea6f0c9e5",
+      "creationDate": "2022-09-26T14:38:15.7924267Z",
+      "gym_Id": 666,
+      "healthClub_Id": 777,
+      "title": "Mr",
+      "last_Name": "Jones",
+      "first_Name": "Tim",
+      "middle_Initial": "F",
+      "birth_Date": "1985-09-26T14:38:15.7924267Z",
+      "sex": "Male",
+      "registration_Number": 23456,
+      "post_Code": "BH48YT",
+      "address_1": "22 Leylands Drive",
+      "address_2": "The Mews",
+      "town_City": "Liverpool",
+      "county": "Dorset",
+      "country_Code": "en-gb",
+      "telephone": "01234986773",
+      "mobile": "0785234884",
+      "fax": "0668337722",
+      "email": "test@home.com",
+      "conditions": "Pain in the left hip",
+      "archive": "No",
+      "membership_Number": 555666,
+      "contact_Id": 675675
+    }
+  },
+  {
+    "userId": "123",
+    "role": "admin",
+    "notifications": [
+      {
+        "module": "module1",
+        "currentState": "notSet",
+        "actionState": "before",
+        "greetingHeading": "Hello from Blazor",
+        "primaryNotificationMessage": "",
+        "notificationDateTimestamp": "22/1/2022:23:10:30",
+        "history": [
+          {
+            "actionState": "before",
+            "state": "yes",
+            "actionedDateTime": "22/1/2022:23:10:30"
+          },
+          {
+            "actionState": "after",
+            "state": "no",
+            "actionedDateTime": "21/1/2022:21:10:30"
+          }
+        ]
+      }
+    ],
+    "personal": {
+      "categories": [
+        {
+          "name": "sports"
+        },
+        {
+          "name": "movies"
+        }
+      ],
+      "Id": null,
+      "guid": "4c9205c6-02a3-49a3-b1f7-ee8ea6f0c9e5",
+      "creationDate": "2022-09-26T14:38:15.7924267Z",
+      "gym_Id": 666,
+      "healthClub_Id": 777,
+      "title": "Mrs",
+      "last_Name": "Pope",
+      "first_Name": "Sally",
+      "middle_Initial": "F",
+      "birth_Date": "1985-09-26T14:38:15.7924267Z",
+      "sex": "Male",
+      "registration_Number": 23456,
+      "post_Code": "BH48YT",
+      "address_1": "55 Green street",
+      "address_2": "West hampton",
+      "town_City": "Derbyshire",
+      "county": "Dorset",
+      "country_Code": "en-gb",
+      "telephone": "01234986773",
+      "mobile": "0785234884",
+      "fax": "0668337722",
+      "email": "sally@home.com",
+      "conditions": "Want to join the Gym",
+      "archive": "No",
+      "membership_Number": 555666,
+      "contact_Id": 675675
+    }
+  }
+]

@@ -1,0 +1,105 @@
+﻿@page "/sendsms"
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using Amazon.SimpleNotificationService;
+@using Amazon.SimpleNotificationService.Model;
+@using System.Threading.Tasks;
+@using Amazon;
+@using Microsoft.Extensions.Configuration;
+@inject NotificationService NotificationService
+@using Radzen
+@using System.Text.Json
+@using Microsoft.JSInterop;
+@using MauiNotifications.Services.Topics
+@using MauiNotifications.Services.Subscriptions
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<div class="container my-4">
+    <RadzenTemplateForm TItem="SmsForm" Data="@model" Submit="@((SmsForm args) => { Submit(args); })">
+        <RadzenFieldset Text="Send SMS">
+
+            <div class="row mb-4">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Mobile number" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenDropDown TValue="string" @bind-value="@model.MobileNumber" Data=@mobileList style="width: 100%;display: block;" TextProperty="" ValueProperty="" Name="MobileList">
+                    </RadzenDropDown>
+                    <RadzenRequiredValidator Component="MobileList" Text="Phone number is required" Popup=@popup Style="position: absolute" />
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Select payload" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenDropDown TValue="string" @bind-value="@model.PayloadType" Data=@payloadTypes style="width: 100%;display: block;" TextProperty="" ValueProperty="" Name="PayloadType">
+                    </RadzenDropDown>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                        <RadzenButton Class="w-50" ButtonType="ButtonType.Submit" Icon="" Text="Send" />
+                    </div>
+                </div>
+            </div>
+        </RadzenFieldset>
+    </RadzenTemplateForm>
+</div>
+
+@code {
+
+    SmsForm model = new SmsForm();
+    bool success;
+    bool popup = false;
+    string[] payloadTypes = { "Simple", "Complex" };
+    string[] mobileList = null;
+
+    SnsTopicService _topicService = null;
+    SubscriptionService _subscrService = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        model.PayloadType = payloadTypes[0];
+    }
+
+    public class SmsForm
+    {
+        public string MobileNumber { get; set; }
+
+        public string PayloadType { get; set; }
+    }
+
+    void ShowNotification(NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+
+    async Task Submit(SmsForm arg)
+    {
+        //
+        //ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success Summary", Detail = "Success Detail", Duration = 4000 });
+        try
+        {
+            //ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Subscribe success", Detail = successDetail, Duration = 3000 });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Subscribe failed", Detail = e.Message, Duration = 3000 });
+        }
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+    }
+}
+

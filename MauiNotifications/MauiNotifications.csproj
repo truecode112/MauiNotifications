@@ -50,10 +50,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Remove="JSONPayload\ComplexData.json" />
+      <Content Remove="JSONPayload\SimpleData.json" />
       <Content Remove="Settings\appsettings.json" />
     </ItemGroup>
 
     <ItemGroup>
+      <EmbeddedResource Include="JSONPayload\ComplexData.json" />
+      <EmbeddedResource Include="JSONPayload\SimpleData.json" />
       <EmbeddedResource Include="Settings\appsettings.json" />
     </ItemGroup>
 

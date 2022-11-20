@@ -1,0 +1,36 @@
+{
+  "simpleNotification":
+  {
+    "userId": "777",
+    "role": "user",    
+    "personal": {     
+      "Id": null,
+      "guid": "8c9205c6-02a3-49a3-b1f7-ee8ea6f0c9e3",
+      "creationDate": "2020-07-26T14:38:15.7924267Z",
+      "gym_Id": 777,
+      "healthClub_Id": 555,
+      "title": "Miss",
+      "last_Name": "Isabell",
+      "first_Name": "Hallet",
+      "middle_Initial": "A",
+      "birth_Date": "1987-10-26T14:38:15.7924267Z",
+      "sex": "Female",
+      "registration_Number": 78456,
+      "post_Code": "BH38IR",
+      "address_1": "44",
+      "address_2": "Main avenue",
+      "town_City": "Doncaster",
+      "county": "Sussex",
+      "country_Code": "fr-fr",
+      "telephone": "07784986773",
+      "mobile": "0115234884",
+      "fax": "1846337722",
+      "email": "Isabell@home.com",
+      "conditions": "all is well",
+      "archive": "No",
+      "membership_Number": 3434666,
+      "contact_Id": 3335675
+    }
+  }
+}
+  
