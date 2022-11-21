@@ -16,13 +16,13 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
-        /*using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("MauiNotifications.Settings.appsettings.json");
+        using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("MauiNotifications.Settings.appsettings.json");
 
 		var config = new ConfigurationBuilder()
 			.AddJsonStream(stream)
 			.Build();
 		
-		builder.Configuration.AddConfiguration(config);*/
+		builder.Configuration.AddConfiguration(config);
 		builder
 			.UseMauiApp<App>()
 			.ConfigureFonts(fonts =>

@@ -12,6 +12,9 @@
 @using Microsoft.JSInterop;
 @using MauiNotifications.Services.Topics
 @using MauiNotifications.Services.Subscriptions
+@using Amazon.SimpleEmail
+@using Amazon.SimpleEmail.Model
+@using System.Reflection;
 
 <style>
     form .row {
@@ -83,21 +86,67 @@
 
     async Task Submit(EmailForm arg)
     {
-        //
-        //ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success Summary", Detail = "Success Detail", Duration = 4000 });
-        try
+        IConfiguration config = MauiProgram.Services.GetService<IConfiguration>();
+        var settings = config.GetRequiredSection("Settings").Get<Settings.AWSSettings>();
+
+        string payloadName = "";
+        if (model.PayloadType.Equals("Simple"))
         {
-            //ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Subscribe success", Detail = successDetail, Duration = 3000 });
+            payloadName = "MauiNotifications.JSONPayload.SimpleData.json";
+        } else
+        {
+            payloadName = "MauiNotifications.JSONPayload.ComplexData.json";
         }
-        catch (Exception e)
+        using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(payloadName);
+
+        using (StreamReader reader = new StreamReader(stream))
         {
-            Console.WriteLine(e);
-            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Subscribe failed", Detail = e.Message, Duration = 3000 });
+            string jsonFile = reader.ReadToEnd(); //Make string equal to full file
+            using (var client = new AmazonSimpleEmailServiceClient(settings.aws_access_key, settings.aws_secret_key, RegionEndpoint.USEast1))
+            {
+                var sendRequest = new SendEmailRequest
+                    {
+                        Source = "no-reply@amazon.com",
+                        Destination = new Destination
+                        {
+                            ToAddresses = new List<string> { model.Email }
+                        },
+                        Message = new Message
+                        {
+                            Subject = new Content("Message from Amazon"),
+                            Body = new Body
+                            {
+                                Text = new Content
+                                {
+                                    Charset = "UTF-8",
+                                    Data = jsonFile
+                                }
+                            }
+                        }
+                    };
+
+                try
+                {
+                    Console.WriteLine("Sending email using Amazon SES...");
+                    var response = await client.SendEmailAsync(sendRequest);
+                    Console.WriteLine("The email was sent successfully.");
+                    var successDetail = string.Format("Sent email to {0}", model.Email);
+                    ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Send success", Detail = successDetail, Duration = 3000 });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("The email was not sent.");
+                    Console.WriteLine("Error message: " + ex.Message);
+                    ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Send email failed", Detail = ex.Message, Duration = 3000 });
+
+                }
+            }
         }
     }
 
     private void OnValidSubmit(EditContext context)
     {
+        
     }
 }
 
